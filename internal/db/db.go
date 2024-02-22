@@ -7,15 +7,15 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-type Entity struct {
+type PhotoEntity struct {
 	Id   string
-	Name string
+	Data string
 }
 
 type Repository interface {
-	Get(id string) (*Entity, error)
-	GetAll() ([]*Entity, error)
-	Save(entity *Entity) error
+	Get(id string) (*PhotoEntity, error)
+	GetAll() ([]*PhotoEntity, error)
+	Save(entity *PhotoEntity) error
 	Delete(id string) error
 }
 
@@ -36,13 +36,14 @@ func NewSQLLiteRepository() *SQLLiteRepository {
 		db: *GetDb(),
 	}
 
+	var name string
 	//check if table is created
-	row := repo.db.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name='entities'")
-	err := row.Scan()
+	row := repo.db.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name='photos'")
+	err := row.Scan(&name)
 	if err != nil {
 		// if table does not exist, create it
 		if errors.Is(err, sql.ErrNoRows) {
-			repo.db.Exec("CREATE TABLE entities (id TEXT PRIMARY KEY, name TEXT)")
+			repo.db.Exec("CREATE TABLE PHOTOS(id INTEGER PRIMARY KEY, data BLOB)")
 		} else {
 			panic(err)
 		}
@@ -56,8 +57,8 @@ Saves an entity to the SQLLite repository.
 @param {Entity} e - The entity to be saved.
 @returns {error} - An error if the save operation fails, otherwise null.
 */
-func (repo *SQLLiteRepository) Save(e Entity) error {
-	_, err := repo.db.Exec("INSERT INTO entities (id, name) VALUES (?,?)", e.Id, e.Name)
+func (repo *SQLLiteRepository) Save(e PhotoEntity) error {
+	_, err := repo.db.Exec("INSERT INTO PHOTOS (data) VALUES (?)", e.Data)
 	if err != nil {
 		return err
 	}
@@ -70,16 +71,16 @@ Retrieves an entity from the SQLLiteRepository based on the given id.
 @param {string} id - The id of the entity to retrieve.
 @returns {Entity} - The retrieved entity, along with an error if the operation fails.
 */
-func (repo *SQLLiteRepository) Get(id string) (*Entity, error) {
-	rows, err := repo.db.Query("SELECT id, name FROM entities WHERE id =?", id)
+func (repo *SQLLiteRepository) Get(id string) (*PhotoEntity, error) {
+	rows, err := repo.db.Query("SELECT id, data FROM PHOTOS WHERE id =?", id)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	var entity Entity
+	var entity PhotoEntity
 	for rows.Next() {
-		err := rows.Scan(&entity.Id, &entity.Name)
+		err := rows.Scan(&entity.Id, &entity.Data)
 		if err != nil {
 			return nil, err
 		}
@@ -88,8 +89,22 @@ func (repo *SQLLiteRepository) Get(id string) (*Entity, error) {
 }
 
 // TODO: implement get all
-func (repo *SQLLiteRepository) GetAll() ([]*Entity, error) {
-	return nil, nil
+func (repo *SQLLiteRepository) GetAll() ([]*PhotoEntity, error) {
+	rows, err := repo.db.Query("SELECT id, data FROM PHOTOS")
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var entities []*PhotoEntity
+	for rows.Next() {
+		var entity PhotoEntity
+		err := rows.Scan(&entity.Id, &entity.Data)
+		if err != nil {
+			return nil, err
+		}
+		entities = append(entities, &entity)
+	}
+	return entities, nil
 }
 
 // TODO: implement delete
