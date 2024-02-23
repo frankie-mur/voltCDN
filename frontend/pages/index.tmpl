@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>voltCDN</title>
+</head>
+<body>
+	{{.Body}}
+    <form action="/photo" method="post" enctype="multipart/form-data">
+        <input type="file" id="img" name="img" accept="image/*">
+        <input type="submit">
+    </form>
+    <h1>Photos</h1>
+    <! -- Loop through all photots and display them -->
+    {{range.Photos}}
+		<ul>
+			<li><img src="/photo/{{.Id}}">{{.Name}}</a></li>
+		</ul>
+    {{end}}
+</body>
+</html>
