@@ -3,6 +3,7 @@ package db
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -85,6 +86,7 @@ func (repo *SQLLiteRepository) Get(id string) (*PhotoEntity, error) {
 			return nil, err
 		}
 	}
+
 	return &entity, nil
 }
 
@@ -107,7 +109,11 @@ func (repo *SQLLiteRepository) GetAll() ([]*PhotoEntity, error) {
 	return entities, nil
 }
 
-// TODO: implement delete
 func (repo *SQLLiteRepository) Delete(id string) error {
+	_, err := repo.db.Exec("DELETE FROM PHOTOS WHERE id =?", id)
+	if err != nil {
+		fmt.Printf("Error deleting photo with id %s: %s", id, err)
+		return err
+	}
 	return nil
 }
