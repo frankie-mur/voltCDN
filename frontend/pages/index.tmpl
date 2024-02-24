@@ -2,19 +2,25 @@
 <html>
 <head>
 	<title>voltCDN</title>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.7.2/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-	{{.Body}}
     <form action="/photo" method="post" enctype="multipart/form-data">
-        <input type="file" id="img" name="img" accept="image/*">
-        <input type="submit">
+        <input type="file" class="file-input file-input-bordered file-input-primary w-full max-w-xs" id="img" name="img" accept="image/*">
+        <input type="submit" class="btn">
     </form>
     <h1>Photos</h1>
-    <! -- Loop through all photots and display them -->
+    <! -- Loop through all photots and display theme -->
     {{range.Photos}}
-		<ul>
-			<li><img src="/photo/{{.Id}}">{{.Name}}</a></li>
-		</ul>
+    <div class="flex flex-wrap">
+      <div class="card w-96 bg-base-100 shadow-xl">
+        <figure><img src=/photo/{{.Id}} alt="Shoes" /></figure>
+			  <div class="card-body">
+        <h2 class="card-title">{{.Name}}</h2>
+        </div>
+      </div>
+    </div>
     {{end}}
 </body>
 </html>

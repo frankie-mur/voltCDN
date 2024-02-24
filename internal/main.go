@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -18,6 +19,9 @@ type Application struct {
 }
 
 func main() {
+	var port string
+	flag.StringVar(&port, "port", "8080", "Port to listen on")
+	flag.Parse()
 	app := Application{
 		db: db.NewSQLLiteRepository(),
 	}
@@ -31,7 +35,8 @@ func main() {
 
 	mux.HandleFunc("GET /", app.indexPage)
 
-	http.ListenAndServe(":8080", mux)
+	fmt.Printf("Listening on port %s\n", port)
+	http.ListenAndServe(fmt.Sprintf(":%s", port), mux)
 }
 
 type PageData struct {
@@ -48,7 +53,6 @@ func (app *Application) indexPage(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageData := PageData{
-		Body:   "Hello World",
 		Photos: data,
 	}
 
