@@ -16,13 +16,13 @@ import (
 func (app *Application) routes() http.Handler {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("GET /health", health)
-	mux.HandleFunc("POST /photo", app.createPhoto)
-	mux.HandleFunc("GET /photo", app.getAllPhotos)
-	mux.HandleFunc("GET /photo/{id}", app.getPhotoById)
-	mux.HandleFunc("DELETE /photo/{id}", app.deletePhotoById)
+	mux.HandleFunc("GET /health", Health)
+	mux.HandleFunc("POST /photo", app.CreatePhoto)
+	mux.HandleFunc("GET /photo", app.GetAllPhotos)
+	mux.HandleFunc("GET /photo/{id}", app.GetPhotoById)
+	mux.HandleFunc("DELETE /photo/{id}", app.DeletePhotoById)
 
-	mux.HandleFunc("GET /", app.indexPage)
+	mux.HandleFunc("GET /", app.IndexPage)
 	return mux
 }
 
@@ -31,7 +31,7 @@ type PageData struct {
 	Photos []*db.PhotoEntity
 }
 
-func (app *Application) indexPage(w http.ResponseWriter, r *http.Request) {
+func (app *Application) IndexPage(w http.ResponseWriter, r *http.Request) {
 	indexPage := "./frontend/pages/index.tmpl"
 	data, err := app.db.GetAll()
 	if err != nil {
@@ -54,11 +54,11 @@ func (app *Application) indexPage(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func health(w http.ResponseWriter, r *http.Request) {
+func Health(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("healthy"))
 }
 
-func (app *Application) createPhoto(w http.ResponseWriter, r *http.Request) {
+func (app *Application) CreatePhoto(w http.ResponseWriter, r *http.Request) {
 	err := r.ParseMultipartForm(10 << 20) //10mb
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -107,7 +107,7 @@ func (app *Application) createPhoto(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Photo saved"))
 }
 
-func (app *Application) getAllPhotos(w http.ResponseWriter, r *http.Request) {
+func (app *Application) GetAllPhotos(w http.ResponseWriter, r *http.Request) {
 	entities, err := app.db.GetAll()
 	if err != nil {
 		w.Write([]byte(err.Error()))
@@ -119,7 +119,7 @@ func (app *Application) getAllPhotos(w http.ResponseWriter, r *http.Request) {
 	w.Write(resp)
 }
 
-func (app *Application) getPhotoById(w http.ResponseWriter, r *http.Request) {
+func (app *Application) GetPhotoById(w http.ResponseWriter, r *http.Request) {
 	idString := r.PathValue("id")
 	if idString == "" {
 		http.Error(w, "Invalid id", http.StatusBadRequest)
@@ -141,7 +141,7 @@ func (app *Application) getPhotoById(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (app *Application) deletePhotoById(w http.ResponseWriter, r *http.Request) {
+func (app *Application) DeletePhotoById(w http.ResponseWriter, r *http.Request) {
 	idString := r.PathValue("id")
 	if idString == "" {
 		http.Error(w, "Invalid id", http.StatusBadRequest)
