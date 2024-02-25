@@ -153,5 +153,7 @@ func (app *Application) DeletePhotoById(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	w.WriteHeader(http.StatusNoContent)
+	//Here we just write an empty response, as this is an HTMX request
+	//And the response will replace the element specified in the request.
+	w.Write([]byte(""))
 }
