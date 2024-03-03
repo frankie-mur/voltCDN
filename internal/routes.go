@@ -103,8 +103,8 @@ func (app *Application) CreatePhoto(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(err.Error()))
 		return
 	}
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("Photo saved"))
+
+	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
 
 func (app *Application) GetAllPhotos(w http.ResponseWriter, r *http.Request) {
@@ -129,7 +129,6 @@ func (app *Application) GetPhotoById(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		w.Write([]byte(err.Error()))
 	}
-	fmt.Println(res.Name)
 	contentType := filepath.Ext(res.Name)[1:]
 	w.Header().Set("Content-Type", fmt.Sprintf("image/%s", contentType))
 	w.Header().Set("Content-Length", fmt.Sprintf("%d", len(res.Data)))

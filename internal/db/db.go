@@ -91,7 +91,6 @@ func (repo *SQLLiteRepository) Get(id string) (*PhotoEntity, error) {
 	return &entity, nil
 }
 
-// TODO: implement get all
 func (repo *SQLLiteRepository) GetAll() ([]*PhotoEntity, error) {
 	rows, err := repo.db.Query("SELECT id, name, data FROM photos")
 	if err != nil {
